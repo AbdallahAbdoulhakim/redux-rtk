@@ -3,12 +3,14 @@ import { Types } from "mongoose";
 export const verifyParams = (
   res,
   params,
-  mandatoryParams,
-  optionalParams = []
+  mandatoryParams = [],
+  optionalParams = [],
+  emptyAllowed = false,
+  mutuallyExclusive = []
 ) => {
   const keys = Object.keys(params);
 
-  if (!keys.length) {
+  if (!keys.length && !emptyAllowed) {
     res.status(400);
     throw new Error(`Bad request, no parameters provided!`);
   }
@@ -44,15 +46,31 @@ export const verifyParams = (
     );
   }
 
+  if (mutuallyExclusive.length) {
+    mutuallyExclusive.forEach((lev) => {
+      if (lev.every((value, index, arr) => keys.includes(value))) {
+        res.status(400);
+        throw new Error(
+          `Only one of these parameters must be presents, (${lev.join(", ")}).`
+        );
+      }
+    });
+  }
+
   return;
 };
 
-export const verifyBsonId = (res, id) => {
-  const isValid = Types.ObjectId.isValid(id);
+export const verifyBsonId = (res, payload) => {
+  const id = Object.values(payload)[0];
+  const key = Object.keys(payload)[0];
+
+  const isValid = isNaN(id) && Types.ObjectId.isValid(id);
 
   if (!isValid) {
     res.status(400);
-    throw new Error("the query parameter provided is not a valid BSON id.");
+    throw new Error(
+      `the query parameter provided (${key}) is not a valid BSON id.`
+    );
   }
 
   return;

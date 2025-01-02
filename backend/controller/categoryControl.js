@@ -20,10 +20,15 @@ export const createCategory = expressAsyncHandler(async (req, res, next) => {
 
 export const getCategory = expressAsyncHandler(async (req, res, next) => {
   try {
-    const { id } = req?.params;
-    verifyBsonId(res, id);
+    verifyBsonId(res, req.params);
+    const { id } = req.params;
 
     const foundCategory = await categoryModel.findById(id);
+
+    if (!foundCategory) {
+      res.status(404);
+      throw new Error("Category Not Found!");
+    }
 
     res.status(200).json({
       success: true,
@@ -40,9 +45,9 @@ export const getCategory = expressAsyncHandler(async (req, res, next) => {
 
 export const updateCategory = expressAsyncHandler(async (req, res, next) => {
   try {
-    const { id } = req?.params;
+    verifyBsonId(res, req.params);
+    const { id } = req.params;
 
-    verifyBsonId(res, id);
     verifyParams(res, req.body, ["title"]);
 
     const foundCategory = await categoryModel.findByIdAndUpdate(
@@ -50,6 +55,11 @@ export const updateCategory = expressAsyncHandler(async (req, res, next) => {
       { ...req.body },
       { new: true }
     );
+
+    if (!foundCategory) {
+      res.status(404);
+      throw new Error("Category Not Found!");
+    }
 
     res.status(200).json({
       success: true,
@@ -66,8 +76,8 @@ export const updateCategory = expressAsyncHandler(async (req, res, next) => {
 
 export const deleteCategory = expressAsyncHandler(async (req, res, next) => {
   try {
-    const { id } = req?.params;
-    verifyBsonId(res, id);
+    verifyBsonId(res, req.params);
+    const { id } = req.params;
 
     const deletedCategory = await categoryModel.findByIdAndDelete(id);
 

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 // Declare the Schema of the Mongo model
 const productSchema = new mongoose.Schema(
@@ -34,6 +35,8 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+productSchema.plugin(paginate);
 
 //Export the model
 export default mongoose.model("Product", productSchema);
