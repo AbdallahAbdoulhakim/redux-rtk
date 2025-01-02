@@ -19,6 +19,10 @@ const productSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Category",
     },
+    image: {
+      type: String,
+      default: "",
+    },
     rate: {
       type: Number,
       default: 1,

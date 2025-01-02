@@ -6,6 +6,7 @@ import notFound from "./middlewares/notFound.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 import categoryRouter from "./routes/categoryRoutes.js";
+import productRouter from "./routes/productRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT;
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/categories", categoryRouter);
+app.use("/products", productRouter);
 
 app.use(notFound);
 app.use(errorHandler);
